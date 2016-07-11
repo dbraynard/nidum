@@ -14,7 +14,7 @@
 #### Restful Command Description
 The curl command has 4 parts, using the above example:
 
-1.	**/fib/** for fibanacci service
+1.	**/fib/** for fibonacci service
 2.	**/myserv1/** for your own user or service instance (creates an Akka entity with this value as part of the persistence id)
 3.	**/60/** is the service timeout in seconds. The first request to fib service initializes a "service" and it will close after 60 seconds. Commands can be issued again under the same service name. However, the timeout path item must be present, but its value is ignored during subsequent calls. After the given time span has passed, future calls to the fib service with the given service instance will return a message indicating that the service has ended.
 4.	**/10** is the input value for the Fibonacci service. The service will return the first 10 values in the Fibonaccni sequence.
