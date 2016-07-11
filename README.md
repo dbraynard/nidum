@@ -6,7 +6,7 @@
 
 #### Basic Instructions
 1.	Run vagrant up, or build on the host machine with `./gradlew build`, `./gradlew runNode` (in one console), and `./gradlew runHttp` (in another).
-2.	Connect to box with vagrant ssh or ssh vagrant@192.168.40.10 (password vagrant) if using Vagrant
+2.	Connect to box with `vagrant ssh` or `ssh vagrant@192.168.40.10` (password vagrant) if using Vagrant
 3.	Get Instructions: `curl 127.0.0.1:9000/fib`
 4.	Run `curl 127.0.0.1:9000/fib/myserv1/60/10` (as an example command to the Fibonacci service)
 5.	Alternately, if host machine is able to access the guest box, then browse to: `127.0.0.1:9000/fib/myserv1/60/10`
@@ -17,7 +17,7 @@ The curl command has 4 parts, using the above example:
 1.	**/fib/** for fibanacci service
 2.	**/myserv1/** for your own user or service instance (creates an Akka entity with this value as part of the persistence id)
 3.	**/60/** is the service timeout in seconds. The first request to fib service initializes a "service" and it will close after 60 seconds. Commands can be issued again under the same service name. However, the timeout path item must be present, but its value is ignored during subsequent calls. After the given time span has passed, future calls to the fib service with the given service instance will return a message indicating that the service has ended.
-4.	**/10** is the input value for the Fibanacci service. The service will return the first 10 values in the Fibanaccni sequence.
+4.	**/10** is the input value for the Fibonacci service. The service will return the first 10 values in the Fibonaccni sequence.
 
 #### Additional Notes on "service instance" and "timeout"
 The "service instance" in this restful service is meant to represent a controlled allocation of usage of the given micro service. The restful url includes a "timeout" value as a user input to enable a simple demonstration of timing out a service. However, such a timeout value would need to be be originated by some user policy system and applied by a middle-tier component in a production system.
