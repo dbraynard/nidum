@@ -1,0 +1,139 @@
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.13'
+}
+
+//the following section is executed only on subprojects, ie. everything except the root project folder
+subprojects {
+
+
+    //compiles java and scala source go to .class files under /build/classes
+    apply plugin: 'scala'
+    apply plugin: 'java'
+
+
+    //send all jars to the root of the project under build/
+    tasks.withType(Jar) {
+        destinationDir = file("$rootDir/build/")
+    }
+
+
+    repositories {
+        mavenCentral()
+        flatDir {
+            dirs '../deps'
+        }
+        
+        dependencies {
+            compile 'org.slf4j:slf4j-api:1.7.7'
+            compile 'org.slf4j:slf4j-log4j12:1.7.7'
+        }
+    }
+
+}
+
+
+
+project("httpservice") {
+
+    version = '1.0'
+
+    jar.archiveName = "nidum-httpservice-${version}.jar"
+
+
+//    sourceSets {
+//        main {
+//            output.resourcesDir = "build/classes/main"
+//        }
+//    }
+
+    dependencies {
+
+        
+        compile 'org.scala-lang:scala-library:2.11.5'
+        compile group: 'org.scalatest', name: 'scalatest_2.11', version: '2.1.6'
+        //alternately, use latest, if needed
+        //compile group: 'org.scalatest', name: 'scalatest_2.11', version: '3.0.0-M15'
+
+        
+        //third-party libraries
+        compile group: 'commons-io', name: 'commons-io', version: '2.4'
+        compile group: 'joda-time', name: 'joda-time', version: '2.9.4'
+
+
+        //akka basic libraries
+        compile group: 'com.typesafe.akka', name: 'akka-actor_2.11', version: '2.4.7'
+        compile group: 'com.typesafe', name: 'config', version: '1.3.0'
+
+        //akka test kit libraries
+        compile 'com.typesafe.akka:akka-multi-node-testkit_2.11:2.4.7'
+
+        //akka persistence libraries
+        compile 'com.typesafe.akka:akka-persistence_2.11:2.4.7'
+        compile 'com.typesafe.akka:akka-persistence-query-experimental_2.11:2.4.7'
+
+        //akka http/spray/routing
+
+//        compile group: 'io.spray', name: 'spray-httpx_2.11', version: '1.3.3'
+//        compile group: 'io.spray', name: 'spray-routing_2.11', version: '1.3.3'
+//        compile group: 'io.spray', name: 'spray-can_2.11', version: '1.3.3'
+
+
+        //akka http libraries
+        compile 'com.typesafe.akka:akka-http-core_2.11:2.4.7'
+        compile 'com.typesafe.akka:akka-http-experimental_2.11:2.4.7'
+        compile 'com.typesafe.akka:akka-http-spray-json-experimental_2.11:2.4.7'
+
+        //akka logging
+        compile group: 'com.typesafe.scala-logging', name: 'scala-logging_2.11', version: '3.4.0'
+
+        //akka cluster libraries
+        compile 'com.typesafe.akka:akka-cluster_2.11:2.4.7'
+        compile 'com.typesafe.akka:akka-cluster-tools_2.11:2.4.7'
+        compile group: 'com.typesafe.akka', name: 'akka-cluster-sharding_2.11', version: '2.4.7'
+        
+        //persistence database type
+        //compile 'org.iq80.leveldb:leveldb:0.7'
+        //compile 'org.fusesource.leveldbjni:leveldbjni-all:1.8'
+
+
+        //compile 'com.typesafe.akka:akka-persistence-cassandra:0.7'
+        //maven only has .7 which is incompatible with the akka jars
+        compile name: 'akka-persistence-cassandra_2.11-0.17-SNAPSHOT'
+        compile group: 'com.datastax.cassandra', name: 'cassandra-driver-core', version: '3.0.2'
+        
+
+    }
+
+    jar {
+        doFirst {
+            from(configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }) {
+                exclude "META-INF/*.SF"
+                exclude "META-INF/*.DSA"
+                exclude "META-INF/*.RSA"
+            }
+        }
+        include 'resources/*'
+        manifest.attributes("Main-Class": "dbraynard.nidum.httpservice.WebServer")
+    }
+
+
+
+    task runHttp(type:JavaExec) {
+        main = 'dbraynard.nidum.httpservice.WebServer'
+        classpath = sourceSets.main.runtimeClasspath
+        args = ["127.0.0.1", 9000, "127.0.0.1", 0]
+        //systemProperty "log4j.configuration", "file:../config/dbraynard.auctiondemo.log4j.properties"
+        setStandardInput(System.in)
+
+    }
+
+    task runNode(type:JavaExec) {
+        main = 'dbraynard.nidum.httpservice.ClusterNodeApp'
+        classpath = sourceSets.main.runtimeClasspath
+        args = ["127.0.0.1", 2551]
+        //systemProperty "log4j.configuration", "file:../config/dbraynard.auctiondemo.log4j.properties"
+        setStandardInput(System.in)
+    }
+
+}
+
