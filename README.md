@@ -49,7 +49,9 @@ The default node allocation strategy should distribute new shards to the additio
 #### Notes on Persistence Storage
 
 This Akka application is configured to use the Cassandra Persistence plugin. Therefore, the vagrant script installs docker and pulls a cassandra docker image. The Virtual Box VM hosting the container is set to use 2 cpus and 8 GB of ram which should suffice.
-Fibonacci Service Implementation Details
+
+#### Fibonacci Service Implementation Details
+
 The Fibonacci actor implementation maintains a cache of the sequence as part of its state object which is expanded as larger sequence requests are made. Each instance of the actor (aka. entity) corresponds to a service id passed in the restful uri. A history of requests are also retained as part of the actor state object.
 
 #### Next features to be added
